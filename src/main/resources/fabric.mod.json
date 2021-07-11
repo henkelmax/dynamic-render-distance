@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "renderdistance",
+  "version": "${version}",
+  "name": "Dynamic Render Distance",
+  "description": "Dynamic Render Distance",
+  "authors": [
+    "Max Henkel"
+  ],
+  "contact": {
+    "website": "https://modrepo.de"
+  },
+  "license": "All Rights Reserved",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "de.maxhenkel.renderdistance.RenderDistance"
+    ]
+  },
+  "mixins": [
+    "renderdistance.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": ">=${fabric_version}",
+    "minecraft": "${minecraft_dependency}",
+    "java": ">=16"
+  }
+}
