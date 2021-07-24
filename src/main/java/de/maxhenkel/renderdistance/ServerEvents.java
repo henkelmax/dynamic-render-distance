@@ -23,6 +23,10 @@ public class ServerEvents {
             return;
         }
 
+        if (RenderDistance.SERVER_CONFIG.fixedRenderDistance.get() > 0) {
+            return;
+        }
+
         PlayerList playerList = server.getPlayerList();
         if (playerList.getPlayerCount() <= 0) {
             return;
