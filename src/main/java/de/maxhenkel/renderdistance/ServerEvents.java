@@ -52,4 +52,20 @@ public class ServerEvents {
         return Arrays.stream(ticks).average().orElse(0D) / 1_000_000D;
     }
 
+    public double getAverageTPS() {
+        return getTPS(getAverageMSPT());
+    }
+
+    public long[] getTicks() {
+        return ticks;
+    }
+
+    public static double round(double value, int digits) {
+        return Math.round(value * Math.pow(10D, digits)) / Math.pow(10D, digits);
+    }
+
+    public static double getTPS(double mspt) {
+        return Math.min(1000D / mspt, 20D);
+    }
+
 }

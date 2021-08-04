@@ -31,3 +31,7 @@ fixed_render_distance | `0` | The fixed render distance; 0 means dynamic render 
 `/renderdistance set <number>` sets the render distance to a fixed value
 
 `/renderdistance set auto` lets the mod dynamically change the render distance again
+
+`/renderdistance mspt` shows the average MSPT over the last interval
+
+`/renderdistance tps` shows the average TPS over the last interval

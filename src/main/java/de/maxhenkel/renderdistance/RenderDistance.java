@@ -15,6 +15,7 @@ public class RenderDistance implements DedicatedServerModInitializer {
     public static final String MODID = "renderdistance";
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static ServerConfig SERVER_CONFIG;
+    public static ServerEvents SERVER_EVENTS;
 
     @Override
     public void onInitializeServer() {
@@ -31,6 +32,6 @@ public class RenderDistance implements DedicatedServerModInitializer {
                 server.getPlayerList().setViewDistance(distance);
             }
         });
-        new ServerEvents();
+        SERVER_EVENTS = new ServerEvents();
     }
 }
