@@ -1,5 +1,7 @@
 package de.maxhenkel.renderdistance.config;
 
+import de.maxhenkel.configbuilder.ConfigBuilder;
+
 public class ServerConfig {
 
     public final ConfigBuilder.ConfigEntry<Double> minMspt;

@@ -1,7 +1,7 @@
 package de.maxhenkel.renderdistance;
 
+import de.maxhenkel.configbuilder.ConfigBuilder;
 import de.maxhenkel.renderdistance.command.RenderDistanceCommands;
-import de.maxhenkel.renderdistance.config.ConfigBuilder;
 import de.maxhenkel.renderdistance.config.ServerConfig;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
