@@ -37,14 +37,30 @@ public class ServerEvents {
         int maxRenderDistance = RenderDistance.SERVER_CONFIG.maxRenderDistance.get();
         if (mspt > RenderDistance.SERVER_CONFIG.maxMspt.get()) {
             if (renderDistance > minRenderDistance) {
-                playerList.setViewDistance(Math.max(playerList.getViewDistance() - 1, minRenderDistance));
-                RenderDistance.LOGGER.info("Setting render distance to: {} ({} mspt)", playerList.getViewDistance(), mspt);
+                setRenderDistance(playerList, Math.max(playerList.getViewDistance() - 1, minRenderDistance), mspt);
             }
         } else if (mspt < RenderDistance.SERVER_CONFIG.minMspt.get()) {
             if (renderDistance < maxRenderDistance) {
-                playerList.setViewDistance(Math.min(playerList.getViewDistance() + 1, maxRenderDistance));
-                RenderDistance.LOGGER.info("Setting render distance to: {} ({} mspt)", playerList.getViewDistance(), mspt);
+                setRenderDistance(playerList, Math.min(playerList.getViewDistance() + 1, maxRenderDistance), mspt);
             }
+        }
+    }
+
+    public static void setRenderDistance(PlayerList playerList, int distance) {
+        setRenderDistance(playerList, distance, -1D);
+    }
+
+    public static void setRenderDistance(PlayerList playerList, int distance, double mspt) {
+        playerList.setViewDistance(distance);
+        if (mspt < 0D) {
+            RenderDistance.LOGGER.info("Set render distance to {}", playerList.getViewDistance());
+        } else {
+            RenderDistance.LOGGER.info("Set render distance to {} ({} mspt)", playerList.getViewDistance(), mspt);
+        }
+
+        if (RenderDistance.SERVER_CONFIG.changeSimulationDistance.get()) {
+            RenderDistance.LOGGER.info("Set simulation distance to {}", distance);
+            playerList.setSimulationDistance(distance);
         }
     }
 

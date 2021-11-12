@@ -22,14 +22,13 @@ public class RenderDistance implements DedicatedServerModInitializer {
         CommandRegistrationCallback.EVENT.register(RenderDistanceCommands::register);
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             if (server instanceof DedicatedServer) {
-                ConfigBuilder.create(server.getServerDirectory().toPath().resolve("config").resolve(MODID).resolve("renderdistance-server.properties"), builder -> SERVER_CONFIG = new ServerConfig(builder));
+                SERVER_CONFIG = ConfigBuilder.build(server.getServerDirectory().toPath().resolve("config").resolve(MODID).resolve("renderdistance-server.properties"), ServerConfig::new);
             }
         });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             int distance = SERVER_CONFIG.fixedRenderDistance.get();
             if (distance > 0) {
-                LOGGER.info("Set render distance to {}", distance);
-                server.getPlayerList().setViewDistance(distance);
+                ServerEvents.setRenderDistance(server.getPlayerList(), distance);
             }
         });
         SERVER_EVENTS = new ServerEvents();
