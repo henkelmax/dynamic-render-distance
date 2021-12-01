@@ -23,7 +23,7 @@ public class ServerEvents {
             return;
         }
 
-        if (RenderDistance.SERVER_CONFIG.fixedRenderDistance.get() > 0) {
+        if (RenderDistance.SERVER_CONFIG.fixedSimulationDistance.get() > 0 && RenderDistance.SERVER_CONFIG.fixedRenderDistance.get() > 0) {
             return;
         }
 
@@ -32,36 +32,35 @@ public class ServerEvents {
             return;
         }
         double mspt = getAverageMSPT();
-        int renderDistance = playerList.getViewDistance();
-        int minRenderDistance = RenderDistance.SERVER_CONFIG.minRenderDistance.get();
-        int maxRenderDistance = RenderDistance.SERVER_CONFIG.maxRenderDistance.get();
+        int simulationDistance = playerList.getSimulationDistance();
+        int minSimulationDistance = RenderDistance.SERVER_CONFIG.minSimulationDistance.get();
+        int maxSimulationDistance = RenderDistance.SERVER_CONFIG.maxSimulationDistance.get();
         if (mspt > RenderDistance.SERVER_CONFIG.maxMspt.get()) {
-            if (renderDistance > minRenderDistance) {
-                setRenderDistance(playerList, Math.max(playerList.getViewDistance() - 1, minRenderDistance), mspt);
+            if (simulationDistance > minSimulationDistance) {
+                setSimulationDistance(playerList, Math.max(playerList.getSimulationDistance() - 1, minSimulationDistance), mspt);
             }
         } else if (mspt < RenderDistance.SERVER_CONFIG.minMspt.get()) {
-            if (renderDistance < maxRenderDistance) {
-                setRenderDistance(playerList, Math.min(playerList.getViewDistance() + 1, maxRenderDistance), mspt);
+            if (simulationDistance < maxSimulationDistance) {
+                setSimulationDistance(playerList, Math.min(playerList.getSimulationDistance() + 1, maxSimulationDistance), mspt);
             }
         }
     }
 
-    public static void setRenderDistance(PlayerList playerList, int distance) {
-        setRenderDistance(playerList, distance, -1D);
+    public static void setSimulationDistance(PlayerList playerList, int distance) {
+        setSimulationDistance(playerList, distance, -1D);
     }
 
-    public static void setRenderDistance(PlayerList playerList, int distance, double mspt) {
-        playerList.setViewDistance(distance);
-        if (mspt < 0D) {
-            RenderDistance.LOGGER.info("Set render distance to {}", playerList.getViewDistance());
-        } else {
-            RenderDistance.LOGGER.info("Set render distance to {} ({} mspt)", playerList.getViewDistance(), mspt);
-        }
-
-        if (RenderDistance.SERVER_CONFIG.changeSimulationDistance.get()) {
-            RenderDistance.LOGGER.info("Set simulation distance to {}", distance);
+    public static void setSimulationDistance(PlayerList playerList, int distance, double mspt) {
+        if (RenderDistance.SERVER_CONFIG.fixedSimulationDistance.get() < 1) {
             playerList.setSimulationDistance(distance);
-        }
+            RenderDistance.refreshDistances(playerList);
+            if (mspt < 0D) {
+                RenderDistance.LOGGER.info("Set simulation distance to {} (render: {})", playerList.getSimulationDistance(), playerList.getViewDistance());
+            } else {
+                RenderDistance.LOGGER.info("Set simulation distance to {}  (render: {}) ({} mspt)", playerList.getSimulationDistance(), playerList.getViewDistance(), mspt);
+            }
+        } else
+            RenderDistance.refreshDistances(playerList);
     }
 
     public double getAverageMSPT() {

@@ -26,6 +26,7 @@ group = project.maven_group
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url = 'https://maven.maxhenkel.de/repository/public' }
     maven { url = "https://maven.fabricmc.net/" }
 }
 
