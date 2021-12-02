@@ -32,8 +32,8 @@ public class RenderDistance implements DedicatedServerModInitializer {
 
     public static void refreshDistances(PlayerList playerList) {
         ServerConfig config = RenderDistance.SERVER_CONFIG;
-        Integer simulation = config.fixedSimulationDistance.get();
-        Integer render = config.fixedRenderDistance.get();
+        int simulation = config.fixedSimulationDistance.get();
+        int render = config.fixedRenderDistance.get();
         if (simulation > 0) {
             if (simulation != playerList.getSimulationDistance())
                 playerList.setSimulationDistance(simulation);
