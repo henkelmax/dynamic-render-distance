@@ -3,6 +3,9 @@ package de.maxhenkel.renderdistance;
 import de.maxhenkel.configbuilder.ConfigBuilder;
 import de.maxhenkel.renderdistance.command.RenderDistanceCommands;
 import de.maxhenkel.renderdistance.config.ServerConfig;
+import de.maxhenkel.renderdistance.modes.PerfDistance;
+import de.maxhenkel.renderdistance.modes.ScalingModes;
+import de.maxhenkel.renderdistance.modes.SimplePerfDistance;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -17,40 +20,47 @@ public class RenderDistance implements DedicatedServerModInitializer {
     public static final Logger LOGGER = LogManager.getLogger(MODID);
     public static ServerConfig SERVER_CONFIG;
     public static ServerEvents SERVER_EVENTS;
+    public static ScalingModes scalingModes;
+    private static PlayerList playerList;
 
     @Override
     public void onInitializeServer() {
         CommandRegistrationCallback.EVENT.register(RenderDistanceCommands::register);
         ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            playerList = server.getPlayerList();
             if (server instanceof DedicatedServer) {
                 SERVER_CONFIG = ConfigBuilder.build(server.getServerDirectory().toPath().resolve("config").resolve(MODID).resolve("renderdistance-server.properties"), ServerConfig::new);
+                SERVER_CONFIG.reloadScalingSteps();
             }
         });
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> refreshDistances(server.getPlayerList()));
-        SERVER_EVENTS = new ServerEvents();
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            playerList = server.getPlayerList();
+            refreshDistances();
+        });
+        scalingModes = new ScalingModes();
+        SERVER_EVENTS = new ServerEvents(scalingModes);
     }
 
-    public static void refreshDistances(PlayerList playerList) {
-        ServerConfig config = RenderDistance.SERVER_CONFIG;
-        int simulation = config.fixedSimulationDistance.get();
-        int render = config.fixedRenderDistance.get();
-        if (simulation > 0) {
-            if (simulation != playerList.getSimulationDistance())
-                playerList.setSimulationDistance(simulation);
+    public static PerfDistance current() {
+        return new SimplePerfDistance(playerList.getSimulationDistance(), playerList.getViewDistance());
+    }
+
+    public static void refreshDistances() {
+        refreshDistances(current());
+    }
+
+    public static boolean refreshDistances(PerfDistance distance) {
+        PerfDistance normalized = scalingModes.getScalingMode().normalize(distance);
+
+        boolean anythingChanged = false;
+        if (normalized.getSimulationDistance() != playerList.getSimulationDistance()) {
+            playerList.setSimulationDistance(normalized.getSimulationDistance());
+            anythingChanged = true;
         }
-        if (render > 0) {
-            if (render != playerList.getViewDistance())
-                playerList.setViewDistance(render);
-        } else {
-            double ratio = config.renderToSimulationRatio.get();
-            if (ratio < 1) {
-                return;
-            }
-            int newDistance = (int) Math.round(playerList.getSimulationDistance() * ratio);
-            newDistance = Math.max(newDistance, RenderDistance.SERVER_CONFIG.minRenderDistance.get());
-            newDistance = Math.min(newDistance, RenderDistance.SERVER_CONFIG.maxRenderDistance.get());
-            if (newDistance != playerList.getViewDistance())
-                playerList.setViewDistance(newDistance);
+        if (normalized.getViewDistance() != playerList.getViewDistance()) {
+            playerList.setViewDistance(normalized.getViewDistance());
+            anythingChanged = true;
         }
+        return anythingChanged;
     }
 }

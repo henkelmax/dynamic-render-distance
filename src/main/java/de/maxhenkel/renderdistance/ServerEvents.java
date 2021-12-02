@@ -1,6 +1,9 @@
 package de.maxhenkel.renderdistance;
 
 import de.maxhenkel.renderdistance.events.TickEvent;
+import de.maxhenkel.renderdistance.modes.PerfDistance;
+import de.maxhenkel.renderdistance.modes.ScalingModes;
+import de.maxhenkel.renderdistance.modes.SimplePerfDistance;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.PlayerList;
 
@@ -9,14 +12,17 @@ import java.util.Arrays;
 public class ServerEvents {
 
     private long[] ticks;
+    private final ScalingModes modes;
 
-    public ServerEvents() {
+    public ServerEvents(ScalingModes modes) {
+        this.modes = modes;
         TickEvent.SERVER_TICK_TIME.register(this::onServerTickTime);
     }
 
     private void onServerTickTime(MinecraftServer server, long time, int tick) {
         if (ticks == null) {
             ticks = new long[RenderDistance.SERVER_CONFIG.tickInterval.get()];
+            RenderDistance.refreshDistances(modes.getScalingMode().startup());
         }
         ticks[tick % ticks.length] = time;
         if (tick % ticks.length != 0) {
@@ -32,35 +38,17 @@ public class ServerEvents {
             return;
         }
         double mspt = getAverageMSPT();
-        int simulationDistance = playerList.getSimulationDistance();
-        int minSimulationDistance = RenderDistance.SERVER_CONFIG.minSimulationDistance.get();
-        int maxSimulationDistance = RenderDistance.SERVER_CONFIG.maxSimulationDistance.get();
+        PerfDistance distance;
         if (mspt > RenderDistance.SERVER_CONFIG.maxMspt.get()) {
-            if (simulationDistance > minSimulationDistance) {
-                setSimulationDistance(playerList, Math.max(playerList.getSimulationDistance() - 1, minSimulationDistance), mspt);
-            }
+            distance = modes.getScalingMode().scaleDown(new SimplePerfDistance(playerList.getSimulationDistance(), playerList.getViewDistance()));
         } else if (mspt < RenderDistance.SERVER_CONFIG.minMspt.get()) {
-            if (simulationDistance < maxSimulationDistance) {
-                setSimulationDistance(playerList, Math.min(playerList.getSimulationDistance() + 1, maxSimulationDistance), mspt);
-            }
+            distance = modes.getScalingMode().scaleUp(new SimplePerfDistance(playerList.getSimulationDistance(), playerList.getViewDistance()));
+        } else {
+            return;
         }
-    }
-
-    public static void setSimulationDistance(PlayerList playerList, int distance) {
-        setSimulationDistance(playerList, distance, -1D);
-    }
-
-    public static void setSimulationDistance(PlayerList playerList, int distance, double mspt) {
-        if (RenderDistance.SERVER_CONFIG.fixedSimulationDistance.get() < 1) {
-            playerList.setSimulationDistance(distance);
-            RenderDistance.refreshDistances(playerList);
-            if (mspt < 0D) {
-                RenderDistance.LOGGER.info("Set simulation distance to {} (render: {})", playerList.getSimulationDistance(), playerList.getViewDistance());
-            } else {
-                RenderDistance.LOGGER.info("Set simulation distance to {}  (render: {}) ({} mspt)", playerList.getSimulationDistance(), playerList.getViewDistance(), mspt);
-            }
-        } else
-            RenderDistance.refreshDistances(playerList);
+        if (RenderDistance.refreshDistances(distance)) {
+            RenderDistance.LOGGER.info("Set simulation distance to {} (render: {}) ({} mspt)", playerList.getSimulationDistance(), playerList.getViewDistance(), mspt);
+        }
     }
 
     public double getAverageMSPT() {
