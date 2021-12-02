@@ -17,8 +17,8 @@ This is a server side only fabric mod, that dynamically adjusts the render and s
 
 Name | Default Value | Description
 ---|---|---
-min_mspt | `30` | The lower threshold in mspt when the mod starts increasing the render
-distance max_mspt | `40` | The upper threshold in mspt when the mod starts decreasing the render distance
+min_mspt | `30` | The lower threshold in mspt when the mod starts increasing the render/simulation distance
+max_mspt | `40` | The upper threshold in mspt when the mod starts decreasing the render/simulation distance
 tick_interval | `200` | The interval of the mspt check
 min_render_distance | `10` | The minimum render distance the server can have
 max_render_distance | `32` | The maximum render distance the server can have
