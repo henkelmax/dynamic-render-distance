@@ -9,9 +9,9 @@ buildscript {
 }
 
 plugins {
-    id "fabric-loom" version "0.11-SNAPSHOT"
-    id "com.matthewprenger.cursegradle" version "1.4.0"
-    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id 'fabric-loom' version '0.12-SNAPSHOT'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 apply plugin: 'forge-update'
@@ -27,7 +27,7 @@ repositories {
     mavenLocal()
     mavenCentral()
     maven { url = 'https://maven.maxhenkel.de/repository/public' }
-    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = 'https://maven.fabricmc.net/' }
 }
 
 runClient.doFirst {

@@ -12,25 +12,25 @@ import de.maxhenkel.renderdistance.config.ServerConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class RenderDistanceCommands {
 
-    public static final SimpleCommandExceptionType ERROR_INVALID_RENDER_DISTANCE = new SimpleCommandExceptionType(new TextComponent("Invalid render distance"));
+    public static final SimpleCommandExceptionType ERROR_INVALID_RENDER_DISTANCE = new SimpleCommandExceptionType(Component.literal("Invalid render distance"));
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
         LiteralArgumentBuilder<CommandSourceStack> literalBuilder = Commands.literal("renderdistance");
 
         literalBuilder.then(Commands.literal("current").executes((context) -> {
             context.getSource().sendSuccess(
-                    new TextComponent("The current simulation distance is ")
-                            .append(new TextComponent(String.valueOf(context.getSource().getServer().getPlayerList().getSimulationDistance())).withStyle(ChatFormatting.GREEN))
-                            .append(new TextComponent(" chunks, and current render distance is "))
-                            .append(new TextComponent(String.valueOf(context.getSource().getServer().getPlayerList().getViewDistance())).withStyle(ChatFormatting.GREEN))
-                            .append(new TextComponent(" chunks"))
+                    Component.literal("The current simulation distance is ")
+                            .append(Component.literal(String.valueOf(context.getSource().getServer().getPlayerList().getSimulationDistance())).withStyle(ChatFormatting.GREEN))
+                            .append(Component.literal(" chunks, and current render distance is "))
+                            .append(Component.literal(String.valueOf(context.getSource().getServer().getPlayerList().getViewDistance())).withStyle(ChatFormatting.GREEN))
+                            .append(Component.literal(" chunks"))
                     , false);
             return 1;
         }));
@@ -49,10 +49,10 @@ public class RenderDistanceCommands {
         literalBuilder.then(Commands.literal("mspt").executes((context) -> {
             double mspt = ServerEvents.round(RenderDistance.SERVER_EVENTS.getAverageMSPT(), 2);
             context.getSource().sendSuccess(
-                    new TextComponent("The average MSPT over ")
-                            .append(new TextComponent(String.valueOf(RenderDistance.SERVER_EVENTS.getTicks().length)).withStyle(ChatFormatting.GREEN))
-                            .append(new TextComponent(" ticks is "))
-                            .append(new TextComponent(String.valueOf(mspt)).withStyle(mspt > 50D ? ChatFormatting.RED : ChatFormatting.GREEN))
+                    Component.literal("The average MSPT over ")
+                            .append(Component.literal(String.valueOf(RenderDistance.SERVER_EVENTS.getTicks().length)).withStyle(ChatFormatting.GREEN))
+                            .append(Component.literal(" ticks is "))
+                            .append(Component.literal(String.valueOf(mspt)).withStyle(mspt > 50D ? ChatFormatting.RED : ChatFormatting.GREEN))
                     , false);
             return 1;
         }));
@@ -60,10 +60,10 @@ public class RenderDistanceCommands {
         literalBuilder.then(Commands.literal("tps").executes((context) -> {
             double tps = ServerEvents.round(RenderDistance.SERVER_EVENTS.getAverageTPS(), 2);
             context.getSource().sendSuccess(
-                    new TextComponent("The average TPS over ")
-                            .append(new TextComponent(String.valueOf(RenderDistance.SERVER_EVENTS.getTicks().length)).withStyle(ChatFormatting.GREEN))
-                            .append(new TextComponent(" ticks is "))
-                            .append(new TextComponent(String.valueOf(tps)).withStyle(tps < 20D ? ChatFormatting.RED : ChatFormatting.GREEN))
+                    Component.literal("The average TPS over ")
+                            .append(Component.literal(String.valueOf(RenderDistance.SERVER_EVENTS.getTicks().length)).withStyle(ChatFormatting.GREEN))
+                            .append(Component.literal(" ticks is "))
+                            .append(Component.literal(String.valueOf(tps)).withStyle(tps < 20D ? ChatFormatting.RED : ChatFormatting.GREEN))
                     , false);
             return 1;
         }));
@@ -82,9 +82,9 @@ public class RenderDistanceCommands {
             fixedDistanceEntry.get().save();
             RenderDistance.refreshDistances(context.getSource().getServer().getPlayerList());
             context.getSource().sendSuccess(
-                    new TextComponent("Successfully set the " + name + " distance to ")
-                            .append(new TextComponent(String.valueOf(renderDistance)).withStyle(ChatFormatting.GREEN))
-                            .append(new TextComponent(" chunks"))
+                    Component.literal("Successfully set the " + name + " distance to ")
+                            .append(Component.literal(String.valueOf(renderDistance)).withStyle(ChatFormatting.GREEN))
+                            .append(Component.literal(" chunks"))
                     , false);
             return 1;
         }))
@@ -92,8 +92,8 @@ public class RenderDistanceCommands {
                     fixedDistanceEntry.get().set(0);
                     fixedDistanceEntry.get().save();
                     context.getSource().sendSuccess(
-                            new TextComponent("Successfully set the " + name + " distance to ")
-                                    .append(new TextComponent("auto").withStyle(ChatFormatting.GREEN))
+                            Component.literal("Successfully set the " + name + " distance to ")
+                                    .append(Component.literal("auto").withStyle(ChatFormatting.GREEN))
                             , false);
                     return 1;
                 }));
@@ -106,9 +106,9 @@ public class RenderDistanceCommands {
             ratioEntry.get().save();
             RenderDistance.refreshDistances(context.getSource().getServer().getPlayerList());
             context.getSource().sendSuccess(
-                    new TextComponent("Successfully set the view to simulation ratio distance to ")
-                            .append(new TextComponent(String.valueOf(ratio)).withStyle(ChatFormatting.GREEN))
-                            .append(new TextComponent("."))
+                    Component.literal("Successfully set the view to simulation ratio distance to ")
+                            .append(Component.literal(String.valueOf(ratio)).withStyle(ChatFormatting.GREEN))
+                            .append(Component.literal("."))
                     , false);
             return 1;
         }));
@@ -126,11 +126,11 @@ public class RenderDistanceCommands {
                                     maxDistanceEntry.get().set(max);
                                     maxDistanceEntry.get().save();
                                     context.getSource().sendSuccess(
-                                            new TextComponent("Successfully set the " + name + " distance min/max to ")
-                                                    .append(new TextComponent(String.valueOf(min)).withStyle(ChatFormatting.GREEN))
-                                                    .append(new TextComponent("-").withStyle(ChatFormatting.GRAY))
-                                                    .append(new TextComponent(String.valueOf(max)).withStyle(ChatFormatting.GREEN))
-                                                    .append(new TextComponent(" chunks"))
+                                            Component.literal("Successfully set the " + name + " distance min/max to ")
+                                                    .append(Component.literal(String.valueOf(min)).withStyle(ChatFormatting.GREEN))
+                                                    .append(Component.literal("-").withStyle(ChatFormatting.GRAY))
+                                                    .append(Component.literal(String.valueOf(max)).withStyle(ChatFormatting.GREEN))
+                                                    .append(Component.literal(" chunks"))
                                             , false);
                                     return 1;
                                 })));
