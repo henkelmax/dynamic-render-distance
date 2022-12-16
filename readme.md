@@ -5,8 +5,6 @@
 ## Links
 
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/dynamic-render-distance)
-- [ModRepo](https://modrepo.de/minecraft/renderdistance/overview)
-- [GitHub](https://github.com/henkelmax/dynamic-render-distance)
 - [FAQ](https://modrepo.de/minecraft/renderdistance/faq)
 
 ---
